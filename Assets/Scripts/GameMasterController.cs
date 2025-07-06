@@ -64,7 +64,6 @@ public class GameMasterController : MonoBehaviour
     {
         foreach(TMP_Text text in gameObject.GetComponentsInChildren<TMP_Text>())
         {
-            Debug.Log("Updating label: " + text.name);
             if (text.name == "Player" && Player != null)
             {
                 text.SetText(Player.playerName + ": " + Player.GetScore());
