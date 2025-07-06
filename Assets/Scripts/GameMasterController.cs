@@ -10,10 +10,9 @@ public class GameMasterController : MonoBehaviour
 
     public GameObject PlayerPrefab;
     private PlayerController Player;
-    private string ScorePlayerName;
-    private int ScorePlayerScore;
-    private bool isGameOver = false;
-
+    private string HighScorePlayerName;
+    private int HighScorePlayerScore;
+    public bool isGameOver = false;
 
     private void Awake()
     {
@@ -29,8 +28,8 @@ public class GameMasterController : MonoBehaviour
 
     public void Start()
     {
-        ScorePlayerName = "YetToCome";
-        ScorePlayerScore = 1000;
+        HighScorePlayerName = "YetToCome";
+        HighScorePlayerScore = 1000;
     }
 
     public void StartGame(string playerName)
@@ -51,7 +50,10 @@ public class GameMasterController : MonoBehaviour
 
     public void Update()
     {
-        UpdateLabels();
+        if (Player != null)
+        {
+            UpdateHighScore(Player.playerName, Player.GetScore());
+        }
 
         if (isGameOver && Mouse.current.leftButton.wasPressedThisFrame)
         {
@@ -60,32 +62,38 @@ public class GameMasterController : MonoBehaviour
         }
     }
 
-    private void UpdateLabels()
-    {
-        foreach(TMP_Text text in gameObject.GetComponentsInChildren<TMP_Text>())
-        {
-            if (text.name == "Player" && Player != null)
-            {
-                text.SetText(Player.playerName + ": " + Player.GetScore());
-            }
-            else if (text.name == "Score")
-            {
-                text.SetText(ScorePlayerName + ": " + ScorePlayerScore);
-            }
-            else if (text.name == "GameOver")
-            {
-                text.SetText(isGameOver ? "Game Over" : "");
-            }
-        }
-    }
-
     public void GameOver(string playerName, int score)
     {
         isGameOver = true;
-        if (score > ScorePlayerScore)
+        UpdateHighScore(playerName, score);
+    }
+
+    public string GetPlayerName()
+    {
+        return Player != null ? Player.playerName : "No Player";
+    }
+
+    public int GetPlayerScore()
+    {
+        return Player != null ? Player.GetScore() : 0;
+    }
+
+    private void UpdateHighScore(string playerName, int score)
+    {
+        if (score > HighScorePlayerScore)
         {
-            ScorePlayerName = playerName;
-            ScorePlayerScore = score;
+            HighScorePlayerName = playerName;
+            HighScorePlayerScore = score;
         }
+    }
+
+    public int GetHighScorePlayerScore()
+    {
+        return HighScorePlayerScore;
+    }
+
+    public string GetHighScorePlayerName()
+    {
+        return HighScorePlayerName;
     }
 }
