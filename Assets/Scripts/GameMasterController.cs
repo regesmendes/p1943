@@ -1,6 +1,5 @@
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -31,7 +30,7 @@ public class GameMasterController : MonoBehaviour
     public void Start()
     {
         ScorePlayerName = "YetToCome";
-        ScorePlayerScore = 10000;
+        ScorePlayerScore = 1000;
     }
 
     public void StartGame(string playerName)
@@ -55,10 +54,10 @@ public class GameMasterController : MonoBehaviour
     {
         UpdateLabels();
 
-        if (isGameOver && Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
-        }
+    //     if (isGameOver && Mouse.current.leftButton.wasPressedThisFrame)
+    //     {
+    //         SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+    //     }
     }
 
     private void UpdateLabels()

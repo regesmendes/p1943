@@ -7,7 +7,7 @@ public class MainMenuController : MonoBehaviour
 
     public void OnStartButtonClicked()
     {
-        string playerName = "Pilot";
+        string playerName = playerNameInput.text.Trim();
         GameMasterController.Instance.StartGame(playerName);
     }
 }
