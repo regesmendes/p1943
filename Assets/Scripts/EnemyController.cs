@@ -1,6 +1,4 @@
 using System.Collections;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -74,10 +72,10 @@ public class EnemyController : MonoBehaviour
 
     IEnumerator Shoot()
     {
-        while (target != null)
+        while (target != null && !GameMasterController.Instance.isGameOver)
         {
             yield return new WaitForSeconds(1 / fireRate);
-            if (target == null)
+            if (target == null || GameMasterController.Instance.isGameOver)
             {
                 Debug.Log("Target is dead! Suspending firing.");
                 break;
