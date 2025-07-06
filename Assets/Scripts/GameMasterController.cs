@@ -12,7 +12,7 @@ public class GameMasterController : MonoBehaviour
     private PlayerController Player;
     private string ScorePlayerName;
     private int ScorePlayerScore;
-    private bool isGameOver = true;
+    private bool isGameOver = false;
 
 
     private void Awake()
@@ -47,23 +47,24 @@ public class GameMasterController : MonoBehaviour
         playerObj.name = "Player";
         Player = playerObj.GetComponent<PlayerController>();
         Player.playerName = playerName;
-        isGameOver = false;
     }
 
     public void Update()
     {
         UpdateLabels();
 
-    //     if (isGameOver && Mouse.current.leftButton.wasPressedThisFrame)
-    //     {
-    //         SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
-    //     }
+        if (isGameOver && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            isGameOver = false;
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+        }
     }
 
     private void UpdateLabels()
     {
         foreach(TMP_Text text in gameObject.GetComponentsInChildren<TMP_Text>())
         {
+            Debug.Log("Updating label: " + text.name);
             if (text.name == "Player" && Player != null)
             {
                 text.SetText(Player.playerName + ": " + Player.GetScore());
