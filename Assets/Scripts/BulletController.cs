@@ -36,21 +36,24 @@ public class BulletController : MonoBehaviour
     {
         if (other.gameObject.CompareTag(targetTag))
         {
-            if (playerController != null)
+            // POLYMORPHISM - Using GameEntity reference to call TakeDamage on any game entity
+            var gameEntity = other.gameObject.GetComponent<GameEntity>();
+            if (gameEntity != null)
             {
-                var enemyController = other.gameObject.GetComponent<EnemyController>();
-                playerController.IncreaseScore(enemyController.points);
-            }
-            else
-            {
-                var hitPlayerController = other.gameObject.GetComponent<PlayerController>();
-                if (hitPlayerController != null)
+                gameEntity.TakeDamage(100); // Deal damage to any GameEntity
+                
+                // Award points if this is a player bullet hitting an enemy
+                if (playerController != null)
                 {
-                    GameMasterController.Instance.GameOver(hitPlayerController.playerName, hitPlayerController.GetScore());
+                    var enemyController = other.gameObject.GetComponent<EnemyController>();
+                    if (enemyController != null)
+                    {
+                        playerController.IncreaseScore(enemyController.points);
+                    }
                 }
             }
+            
             Instantiate(explosionParticle, other.gameObject.transform.position, other.gameObject.transform.rotation);
-            Destroy(other.gameObject);
             AudioSource.PlayClipAtPoint(explosionSound, Camera.main.transform.position);
             Destroy(gameObject);
         }

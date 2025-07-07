@@ -355,6 +355,7 @@ GameObject:
   - component: {fileID: 385811019}
   - component: {fileID: 385811021}
   - component: {fileID: 385811020}
+  - component: {fileID: 385811022}
   m_Layer: 5
   m_Name: GameOver
   m_TagString: Untagged
@@ -480,6 +481,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385811018}
   m_CullTransparentMesh: 1
+--- !u!114 &385811022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385811018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79d50e63b135abf45a3f32577e4d3aa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GameOverText: {fileID: 385811020}
 --- !u!1 &403835085
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,6 +540,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerPrefab: {fileID: 4702917926868155857, guid: 822681a68b6e58e4cbd9fa6484c06978, type: 3}
+  isGameOver: 0
 --- !u!1 &610449117
 GameObject:
   m_ObjectHideFlags: 0
@@ -654,6 +669,7 @@ GameObject:
   - component: {fileID: 665532973}
   - component: {fileID: 665532975}
   - component: {fileID: 665532974}
+  - component: {fileID: 665532976}
   m_Layer: 5
   m_Name: Player
   m_TagString: Untagged
@@ -779,6 +795,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 665532972}
   m_CullTransparentMesh: 1
+--- !u!114 &665532976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665532972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce6b6a22ea450114fa69102b983ffe87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 665532974}
 --- !u!1 &802942476
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,8 +819,9 @@ GameObject:
   - component: {fileID: 802942477}
   - component: {fileID: 802942479}
   - component: {fileID: 802942478}
+  - component: {fileID: 802942480}
   m_Layer: 5
-  m_Name: Score
+  m_Name: HighScore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -915,6 +945,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 802942476}
   m_CullTransparentMesh: 1
+--- !u!114 &802942480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802942476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ada8667ba75e09d4fa930b81b5c78974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HighScoreText: {fileID: 802942478}
 --- !u!1 &894738181
 GameObject:
   m_ObjectHideFlags: 0

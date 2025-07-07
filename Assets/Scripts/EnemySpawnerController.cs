@@ -58,7 +58,7 @@ public class EnemySpawnerController : MonoBehaviour
         );
         var enemy = enemyObj.GetComponent<EnemyController>();
         enemy.startingPosition = new Vector3(42, 2, 20);
-        enemy.speed *= -1;
+        enemy.MoveSpeed *= -1;
         enemy.transform.Rotate(0, 0, 180);
     }
 }
