@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// INHERITANCE - EnemySpawnerController inherits from MonoBehaviour
 public class EnemySpawnerController : MonoBehaviour
 {
     public GameObject enemyPrefab;
@@ -8,37 +9,37 @@ public class EnemySpawnerController : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating("spawnEnemy", 1f, 10f);
+        InvokeRepeating(nameof(SpawnEnemy), 1f, 10f);
     }
 
-    private void spawnEnemy()
+    private void SpawnEnemy()
     {
         if (waveCount++ % 2 == 0)
         {
-            leftToRightSquad();
+            LeftToRightSquad();
         } else
         {
-            rightToLeftSquad();
+            RightToLeftSquad();
         }
     }
 
-    private void leftToRightSquad()
+    private void LeftToRightSquad()
     {
         for (int i = 0; i < 5; i++)
         {
-            Invoke("leftToRightPlane", i * intervalBetweenPlanes);
+            Invoke(nameof(LeftToRightPlane), i * intervalBetweenPlanes);
         }
     }
 
-    private void rightToLeftSquad()
+    private void RightToLeftSquad()
     {
         for (int i = 0; i < 5; i++)
         {
-            Invoke("rightToLeftPlane", i * intervalBetweenPlanes);
+            Invoke(nameof(RightToLeftPlane), i * intervalBetweenPlanes);
         }
     }
 
-    private void leftToRightPlane()
+    private void LeftToRightPlane()
     {
         var enemyObj = Instantiate(
             enemyPrefab,
@@ -49,7 +50,7 @@ public class EnemySpawnerController : MonoBehaviour
         enemy.startingPosition = new Vector3(-42, 2, 20);
     }
 
-    private void rightToLeftPlane()
+    private void RightToLeftPlane()
     {
         var enemyObj = Instantiate(
             enemyPrefab,
@@ -58,7 +59,7 @@ public class EnemySpawnerController : MonoBehaviour
         );
         var enemy = enemyObj.GetComponent<EnemyController>();
         enemy.startingPosition = new Vector3(42, 2, 20);
-        enemy.speed *= -1;
+        enemy.MoveSpeed *= -1;
         enemy.transform.Rotate(0, 0, 180);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// INHERITANCE - BulletController inherits from MonoBehaviour
 public class BulletController : MonoBehaviour
 {
 
@@ -36,23 +37,24 @@ public class BulletController : MonoBehaviour
     {
         if (other.gameObject.CompareTag(targetTag))
         {
-            if (playerController != null)
-            {
-                var enemyController = other.gameObject.GetComponent<EnemyController>();
-                playerController.IncreaseScore(enemyController.points);
-            }
-            else
-            {
-                var hitPlayerController = other.gameObject.GetComponent<PlayerController>();
-                if (hitPlayerController != null)
-                {
-                    GameMasterController.Instance.GameOver(hitPlayerController.playerName, hitPlayerController.GetScore());
-                }
-            }
+            // POLYMORPHISM - Using GameEntity reference to call TakeDamage on any game entity
+            var gameEntity = other.gameObject.GetComponent<GameEntity>();
+            gameEntity.TakeDamage(100);
+
+            // Award points if this is a player bullet hitting an enemy
+            Score(other);
             Instantiate(explosionParticle, other.gameObject.transform.position, other.gameObject.transform.rotation);
-            Destroy(other.gameObject);
             AudioSource.PlayClipAtPoint(explosionSound, Camera.main.transform.position);
             Destroy(gameObject);
+        }
+    }
+
+    private void Score(Collider target)
+    {
+        if (playerController != null)
+        {
+            var enemyController = target.gameObject.GetComponent<EnemyController>();
+            playerController.IncreaseScore(enemyController.points);
         }
     }
 }

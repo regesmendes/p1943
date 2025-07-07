@@ -1,20 +1,27 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+// INHERITANCE - PlayerController inherits from GameEntity
+public class PlayerController : GameEntity
 {
     private Vector2 moveInput;
     private PlayerInput playerInput;
-    public float moveSpeed;
     public GameObject bulletPrefab;
 
     private readonly float zBounds = 22f;
     private readonly float xBounds = 38f;
 
+    // ENCAPSULATION - private field
     private int score = 0;
     public AudioClip shootSound;
 
     public string playerName;
+
+    // ENCAPSULATION - Public getter for private score field
+    public int GetScore()
+    {
+        return score;
+    }
 
     void Start()
     {
@@ -23,22 +30,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        Vector3 move = new(moveInput.x, 0, moveInput.y);
-        transform.position += moveSpeed * Time.deltaTime * move;
+        Move();
         CheckBoundaries();
-    }
-
-    private void CheckBoundaries()
-    {
-        if (transform.position.z > zBounds || transform.position.z < -zBounds ||
-            transform.position.x > xBounds || transform.position.x < -xBounds)
-        {
-            transform.position = new Vector3(
-                Mathf.Clamp(transform.position.x, -xBounds, xBounds),
-                2f,
-                Mathf.Clamp(transform.position.z, -zBounds, zBounds)
-            );
-        }
     }
 
     public void OnMove()
@@ -61,8 +54,27 @@ public class PlayerController : MonoBehaviour
         score += amount;
     }
 
-    public int GetScore()
+    // POLYMORPHISM - Overriding the abstract methods from GameEntity
+    protected override void Die()
     {
-        return score;
+        GameMasterController.Instance.GameOver(playerName, GetScore());
+        Destroy(gameObject);
+    }
+    protected override void Move()
+    {
+        Vector3 move = new(moveInput.x, 0, moveInput.y);
+        transform.position += MoveSpeed * Time.deltaTime * move;
+    }
+    protected override void CheckBoundaries()
+    {
+        if (transform.position.z > zBounds || transform.position.z < -zBounds ||
+            transform.position.x > xBounds || transform.position.x < -xBounds)
+        {
+            transform.position = new Vector3(
+                Mathf.Clamp(transform.position.x, -xBounds, xBounds),
+                2f,
+                Mathf.Clamp(transform.position.z, -zBounds, zBounds)
+            );
+        }
     }
 }
