@@ -88,6 +88,9 @@ public class EnemyController : GameEntity
             float z = circleCenter.z + Mathf.Sin(circleAngle) * circleRadius;
             transform.position = new Vector3(x, 2f, z);
 
+            float yRotation = circleAngle * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(90, -yRotation, 0);
+
             if (Mathf.Abs(circleAngle - circleStartAngle) >= 2 * Mathf.PI)
             {
                 isCircling = false;

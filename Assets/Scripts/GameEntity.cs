@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// INHERITANCE - Base class for all game entities (initially Player and Enemy)
+// INHERITANCE - Base class for all game entities (initially Player and Enemy) and it inherits from MonoBehaviour
 public abstract class GameEntity : MonoBehaviour
 {
     // ENCAPSULATION - private fields with public accessor
@@ -34,7 +34,6 @@ public abstract class GameEntity : MonoBehaviour
     // POLYMORPHISM - Virtual methods that can be overridden by child classes
     protected virtual void OnDamageTaken(int damage)
     {
-        // Default implementation - can be overridden
         Debug.Log($"{gameObject.name} took {damage} damage!");
     }
 
