@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 
-// INHERITANCE - BulletController inherits from MonoBehaviour
 public class BulletController : MonoBehaviour
 {
 
@@ -35,13 +34,12 @@ public class BulletController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"Bullet collided with {other.gameObject.name}, tag: {other.gameObject.tag}");
         if (other.gameObject.CompareTag(targetTag))
         {
-            // POLYMORPHISM - Using GameEntity reference to call TakeDamage on any game entity
             var gameEntity = other.gameObject.GetComponent<GameEntity>();
             gameEntity.TakeDamage(100);
 
-            // Award points if this is a player bullet hitting an enemy
             Score(other);
             Instantiate(explosionParticle, other.gameObject.transform.position, other.gameObject.transform.rotation);
             AudioSource.PlayClipAtPoint(explosionSound, Camera.main.transform.position);

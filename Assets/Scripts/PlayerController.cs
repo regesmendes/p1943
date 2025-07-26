@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// INHERITANCE - PlayerController inherits from GameEntity
 public class PlayerController : GameEntity
 {
     private Vector2 moveInput;
@@ -11,13 +10,14 @@ public class PlayerController : GameEntity
     private readonly float zBounds = 22f;
     private readonly float xBounds = 38f;
 
-    // ENCAPSULATION - private field
     private int score = 0;
     public AudioClip shootSound;
+    private const string DefaultEnemyTag = "Enemy";
+    private const float BulletSpeed = 30f;
+    private Vector3 BulletStartingPosition = Vector3.forward * 2f;
 
     public string playerName;
 
-    // ENCAPSULATION - Public getter for private score field
     public int GetScore()
     {
         return score;
@@ -41,10 +41,10 @@ public class PlayerController : GameEntity
 
     public void OnAttack()
     {
-        var bulletObj = Instantiate(bulletPrefab, transform.position + Vector3.forward * 2, Quaternion.identity);
+        var bulletObj = Instantiate(bulletPrefab, transform.position + BulletStartingPosition, Quaternion.identity);
         var bulletController = bulletObj.GetComponent<BulletController>();
-        bulletController.targetTag = "Enemy";
-        bulletController.bulletSpeed = 30f;
+        bulletController.targetTag = DefaultEnemyTag;
+        bulletController.bulletSpeed = BulletSpeed;
         bulletController.playerController = this;
         AudioSource.PlayClipAtPoint(shootSound, transform.position);
     }
@@ -54,7 +54,6 @@ public class PlayerController : GameEntity
         score += amount;
     }
 
-    // POLYMORPHISM - Overriding the abstract methods from GameEntity
     protected override void Die()
     {
         GameMasterController.Instance.GameOver(playerName, GetScore());

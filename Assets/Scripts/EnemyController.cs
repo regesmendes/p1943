@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-// INHERITANCE - EnemyController inherits from GameEntity
 public class EnemyController : GameEntity
 {
     public GameObject bulletPrefab;
@@ -24,7 +23,7 @@ public class EnemyController : GameEntity
     void Start()
     {
         transform.position = startingPosition;
-        target = GameObject.Find("Player");
+        target = GameObject.Find(GameMasterController.Instance.PlayerPrefab.tag);
         StartCoroutine(Shoot());
     }
 
@@ -41,7 +40,7 @@ public class EnemyController : GameEntity
             yield return new WaitForSeconds(1 / fireRate);
             if (target == null || GameMasterController.Instance.isGameOver)
             {
-                Debug.Log("Target is dead! Suspending firing.");
+                // Debug.Log("Target is dead! Suspending firing.");
                 break;
             }
             Vector3 bulletDirection = target.transform.position - transform.position;
@@ -53,7 +52,6 @@ public class EnemyController : GameEntity
         }
     }
 
-    // POLYMORPHISM - Overriding the abstract methods from GameEntity
     protected override void Die()
     {
         Destroy(gameObject);
@@ -89,7 +87,7 @@ public class EnemyController : GameEntity
             transform.position = new Vector3(x, 2f, z);
 
             float yRotation = circleAngle * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(90, -yRotation, 0);
+            transform.rotation = Quaternion.Euler(MoveSpeed > 0 ? 180 : 0, -yRotation, 0);
 
             if (Mathf.Abs(circleAngle - circleStartAngle) >= 2 * Mathf.PI)
             {
