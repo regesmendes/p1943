@@ -3,28 +3,46 @@ using UnityEngine;
 
 public class EnemyController : GameEntity
 {
-    public GameObject bulletPrefab;
+    [Header("Combat Settings")]
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private float fireRate = 0.5f;
+    [SerializeField] private int points = 100;
+    
+    // ENCAPSULATION - Public property for private points field
+    public int Points => points;
+    
+    [Header("Movement Settings")]
+    [SerializeField] private float xBounds = 44f;
+    [SerializeField] private float circleRadius = 10f;
+    [SerializeField] private float circleSpeed = 1f;
+    
+    // Constants
+    private const float FLIGHT_ALTITUDE = 2f;
+    private const float FLIGHT_Z_POSITION = 20f;
+    private const float BULLET_SPEED = 10f;
+    private const float BULLET_OFFSET = 2f;
+    private const float FULL_CIRCLE = 2 * Mathf.PI;
+    
+    // Private fields
     private GameObject target;
-    public Vector3 startingPosition;
-    public float xBounds = 44f;
-    public float fireRate = 0.5f;
-
-    public float circleRadius = 10f;
-    public float circleSpeed = 1f;
-
-    private bool isCircling = false;
+    private Vector3 startingPosition;
+    private bool isCircling;
     private Vector3 circleCenter;
-    private float circleAngle = 0f;
-    private float circleStartAngle = 0f;
-    private bool isCircleDone = false;
+    private float circleAngle;
+    private float circleStartAngle;
+    private bool isCircleDone;
 
-    public int points = 100;
-
-    void Start()
+    public void Initialize(Vector3 startPos)
     {
+        startingPosition = startPos;
         transform.position = startingPosition;
-        target = GameObject.Find(GameMasterController.Instance.PlayerPrefab.tag);
-        StartCoroutine(Shoot());
+        FindTarget();
+        StartCoroutine(ShootingCoroutine());
+    }
+    
+    private void FindTarget()
+    {
+        target = GameObject.FindGameObjectWithTag("Player");
     }
 
     void FixedUpdate()
@@ -33,23 +51,34 @@ public class EnemyController : GameEntity
         CheckBoundaries();
     }
 
-    IEnumerator Shoot()
+    private IEnumerator ShootingCoroutine()
     {
-        while (target != null && !GameMasterController.Instance.isGameOver)
+        var waitTime = new WaitForSeconds(1f / fireRate);
+        
+        while (CanShoot())
         {
-            yield return new WaitForSeconds(1 / fireRate);
-            if (target == null || GameMasterController.Instance.isGameOver)
+            yield return waitTime;
+            if (CanShoot())
             {
-                // Debug.Log("Target is dead! Suspending firing.");
-                break;
+                FireBullet();
             }
-            Vector3 bulletDirection = target.transform.position - transform.position;
-            Vector3 bulletStartPosition = transform.position + bulletDirection.normalized * 2;
-            var bulletObj = Instantiate(bulletPrefab, bulletStartPosition, Quaternion.identity);
-            var bulletController = bulletObj.GetComponent<BulletController>();
-            bulletController.bulletDirection = bulletDirection.normalized;
-            bulletController.bulletSpeed = 10f;
         }
+    }
+    
+    private bool CanShoot()
+    {
+        return target != null && !GameMasterController.Instance.isGameOver;
+    }
+    
+    private void FireBullet()
+    {
+        Vector3 bulletDirection = (target.transform.position - transform.position).normalized;
+        Vector3 bulletStartPosition = transform.position + bulletDirection * BULLET_OFFSET;
+        
+        GameObject bulletObj = Instantiate(bulletPrefab, bulletStartPosition, Quaternion.identity);
+        BulletController bulletController = bulletObj.GetComponent<BulletController>();
+        bulletController.bulletDirection = bulletDirection;
+        bulletController.bulletSpeed = BULLET_SPEED;
     }
 
     protected override void Die()
@@ -60,41 +89,82 @@ public class EnemyController : GameEntity
     {
         if (!isCircling)
         {
-            transform.position = new Vector3(
-                transform.position.x + MoveSpeed * Time.deltaTime,
-                2f,
-                20f
-            );
-
-            if (
-                !isCircleDone
-            && ((MoveSpeed > 0 && transform.position.x >= 0)
-                || (MoveSpeed < 0 && transform.position.x <= 0)
-            ))
-            {
-                isCircling = true;
-                circleCenter = new Vector3(transform.position.x, 2f, transform.position.z - circleRadius);
-                Vector3 offset = transform.position - circleCenter;
-                circleStartAngle = Mathf.Atan2(offset.z, offset.x);
-                circleAngle = circleStartAngle;
-            }
+            MoveStraight();
+            CheckForCircleStart();
         }
         else
         {
-            circleAngle += circleSpeed * Time.deltaTime * (-MoveSpeed / Mathf.Abs(MoveSpeed));
-            float x = circleCenter.x + Mathf.Cos(circleAngle) * circleRadius;
-            float z = circleCenter.z + Mathf.Sin(circleAngle) * circleRadius;
-            transform.position = new Vector3(x, 2f, z);
-
-            float yRotation = circleAngle * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(MoveSpeed > 0 ? 180 : 0, -yRotation, 0);
-
-            if (Mathf.Abs(circleAngle - circleStartAngle) >= 2 * Mathf.PI)
-            {
-                isCircling = false;
-                isCircleDone = true;
-            }
+            MoveInCircle();
         }
+    }
+    
+    private void MoveStraight()
+    {
+        Vector3 currentPos = transform.position;
+        transform.position = new Vector3(
+            currentPos.x + MoveSpeed * Time.deltaTime,
+            FLIGHT_ALTITUDE,
+            FLIGHT_Z_POSITION
+        );
+    }
+    
+    private void CheckForCircleStart()
+    {
+        if (isCircleDone) return;
+        
+        bool shouldStartCircle = (MoveSpeed > 0 && transform.position.x >= 0) ||
+                                (MoveSpeed < 0 && transform.position.x <= 0);
+        
+        if (shouldStartCircle)
+        {
+            InitializeCircleMovement();
+        }
+    }
+    
+    private void InitializeCircleMovement()
+    {
+        isCircling = true;
+        circleCenter = new Vector3(transform.position.x, FLIGHT_ALTITUDE, transform.position.z - circleRadius);
+        Vector3 offset = transform.position - circleCenter;
+        circleStartAngle = Mathf.Atan2(offset.z, offset.x);
+        circleAngle = circleStartAngle;
+    }
+    
+    private void MoveInCircle()
+    {
+        UpdateCirclePosition();
+        UpdateCircleRotation();
+        CheckForCircleCompletion();
+    }
+    
+    private void UpdateCirclePosition()
+    {
+        circleAngle += circleSpeed * Time.deltaTime * GetDirectionMultiplier();
+        float x = circleCenter.x + Mathf.Cos(circleAngle) * circleRadius;
+        float z = circleCenter.z + Mathf.Sin(circleAngle) * circleRadius;
+        transform.position = new Vector3(x, FLIGHT_ALTITUDE, z);
+    }
+    
+    private void UpdateCircleRotation()
+    {
+        float yRotation = circleAngle * Mathf.Rad2Deg;
+        float xRotation = MoveSpeed > 0 ? 180 : 0;
+        float bankAngle = 30f * GetDirectionMultiplier(); // Inside wing down
+        transform.rotation = Quaternion.Euler(xRotation, -yRotation, bankAngle);
+    }
+    
+    private void CheckForCircleCompletion()
+    {
+        if (Mathf.Abs(circleAngle - circleStartAngle) >= FULL_CIRCLE)
+        {
+            isCircling = false;
+            isCircleDone = true;
+        }
+    }
+    
+    private float GetDirectionMultiplier()
+    {
+        return -MoveSpeed / Mathf.Abs(MoveSpeed);
     }
     protected override void CheckBoundaries()
     {

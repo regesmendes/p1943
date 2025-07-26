@@ -4,68 +4,83 @@ using UnityEngine;
 // INHERITANCE - EnemySpawnerController inherits from MonoBehaviour
 public class EnemySpawnerController : MonoBehaviour
 {
-    public GameObject enemyPrefab;
-    private readonly float intervalBetweenPlanes = 0.3f;
+    [Header("Spawn Settings")]
+    [SerializeField] private GameObject enemyPrefab;
+
+    // Constants
+    private const float INITIAL_DELAY = 1f;
+    private const float INTERVAL_BETWEEN_PLANES = 0.3f;
+    private const int INTERVAL_BETWEEN_WAVES = 5;
+    private const int WAVE_LIMIT = 5;
+    private const int PLANES_PER_SQUAD = 5;
+    private const float LEFT_SPAWN_X = -42f;
+    private const float RIGHT_SPAWN_X = 42f;
+    private const float SPAWN_Y = 2f;
+    private const float SPAWN_Z = 20f;
 
     void Start()
     {
-        Invoke(nameof(Stage1), 1f);
+        Invoke(nameof(StartStage1), INITIAL_DELAY);
     }
 
-    private void Stage1()
+    private void StartStage1()
     {
-        int intervalBetweenWaves = 5;
-        int waveLimit = 5;
-
         string[] enemySquads = {
-            nameof(LeftToRightSquad),
-            nameof(RightToLeftSquad)
+            nameof(SpawnLeftToRightSquad),
+            nameof(SpawnRightToLeftSquad)
         };
 
-        for (int waveCount = 0, interval = intervalBetweenWaves; waveCount++ < waveLimit;)
+        for (int waveCount = 0; waveCount < WAVE_LIMIT; waveCount++)
         {
-            Invoke(enemySquads[waveCount % enemySquads.Count()], interval * waveCount);
+            float delay = INTERVAL_BETWEEN_WAVES * (waveCount + 1);
+            string squadMethod = enemySquads[waveCount % enemySquads.Length];
+            Invoke(squadMethod, delay);
         }
     }
 
-    private void LeftToRightSquad()
+    private void SpawnLeftToRightSquad()
     {
-        for (int i = 0; i < 5; i++)
+        SpawnSquad(nameof(SpawnLeftToRightPlane));
+    }
+
+    private void SpawnRightToLeftSquad()
+    {
+        SpawnSquad(nameof(SpawnRightToLeftPlane));
+    }
+
+    private void SpawnSquad(string planeSpawnMethod)
+    {
+        for (int i = 0; i < PLANES_PER_SQUAD; i++)
         {
-            Invoke(nameof(LeftToRightPlane), i * intervalBetweenPlanes);
+            Invoke(planeSpawnMethod, i * INTERVAL_BETWEEN_PLANES);
         }
     }
 
-    private void RightToLeftSquad()
+    private void SpawnLeftToRightPlane()
     {
-        for (int i = 0; i < 5; i++)
-        {
-            Invoke(nameof(RightToLeftPlane), i * intervalBetweenPlanes);
-        }
+        Vector3 startPosition = new(LEFT_SPAWN_X, SPAWN_Y, SPAWN_Z);
+        Vector3 rotation = new(0, 180, 0);
+        float moveSpeed = Mathf.Abs(enemyPrefab.GetComponent<EnemyController>().MoveSpeed);
+
+        SpawnEnemyPlane(startPosition, rotation, moveSpeed);
     }
 
-    private void LeftToRightPlane()
+    private void SpawnRightToLeftPlane()
     {
-        var enemyObj = Instantiate(
-            enemyPrefab,
-            enemyPrefab.transform.position,
-            enemyPrefab.transform.rotation
-        );
-        var enemy = enemyObj.GetComponent<EnemyController>();
-        enemy.startingPosition = new Vector3(-42, 2, 20);
-        enemy.transform.Rotate(0, 180, 0); // Rotate to face right direction
+        Vector3 startPosition = new(RIGHT_SPAWN_X, SPAWN_Y, SPAWN_Z);
+        Vector3 rotation = new(0, 0, 180);
+        float moveSpeed = -Mathf.Abs(enemyPrefab.GetComponent<EnemyController>().MoveSpeed);
+
+        SpawnEnemyPlane(startPosition, rotation, moveSpeed);
     }
 
-    private void RightToLeftPlane()
+    private void SpawnEnemyPlane(Vector3 startPosition, Vector3 rotation, float moveSpeed)
     {
-        var enemyObj = Instantiate(
-            enemyPrefab,
-            enemyPrefab.transform.position,
-            enemyPrefab.transform.rotation
-        );
-        var enemy = enemyObj.GetComponent<EnemyController>();
-        enemy.startingPosition = new Vector3(42, 2, 20);
-        enemy.MoveSpeed *= -1;
-        enemy.transform.Rotate(0, 0, 180);
+        GameObject enemyObj = Instantiate(enemyPrefab, enemyPrefab.transform.position, enemyPrefab.transform.rotation);
+        EnemyController enemy = enemyObj.GetComponent<EnemyController>();
+
+        enemy.Initialize(startPosition);
+        enemy.MoveSpeed = moveSpeed;
+        enemy.transform.Rotate(rotation);
     }
 }

@@ -34,7 +34,6 @@ public class BulletController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"Bullet collided with {other.gameObject.name}, tag: {other.gameObject.tag}");
         if (other.gameObject.CompareTag(targetTag))
         {
             var gameEntity = other.gameObject.GetComponent<GameEntity>();
@@ -52,7 +51,7 @@ public class BulletController : MonoBehaviour
         if (playerController != null)
         {
             var enemyController = target.gameObject.GetComponent<EnemyController>();
-            playerController.IncreaseScore(enemyController.points);
+            playerController.IncreaseScore(enemyController.Points);
         }
     }
 }

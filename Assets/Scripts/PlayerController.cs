@@ -63,6 +63,10 @@ public class PlayerController : GameEntity
     {
         Vector3 move = new(moveInput.x, 0, moveInput.y);
         transform.position += MoveSpeed * Time.deltaTime * move;
+        
+        // Bank the plane when moving left or right
+        float bankAngle = moveInput.x * -15f; // Negative for correct banking direction
+        transform.rotation = Quaternion.Euler(0, 0, bankAngle);
     }
     protected override void CheckBoundaries()
     {
