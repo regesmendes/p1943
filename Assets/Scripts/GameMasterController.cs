@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+
 public class GameMasterController : MonoBehaviour
 {
     public static GameMasterController Instance;
@@ -12,6 +13,9 @@ public class GameMasterController : MonoBehaviour
     private string HighScorePlayerName;
     private int HighScorePlayerScore;
     public bool isGameOver = false;
+    private const string GameSceneName = "GameScene";
+    private const string MainMenuSceneName = "MainMenu";
+    private const string DefaultPlayerName = "Player";
 
     private void Awake()
     {
@@ -38,11 +42,11 @@ public class GameMasterController : MonoBehaviour
 
     private IEnumerator LoadGameScene(string playerName)
     {
-        SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+        SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
         yield return null;
 
         GameObject playerObj = Instantiate(PlayerPrefab, PlayerPrefab.transform.position, PlayerPrefab.transform.rotation);
-        playerObj.name = "Player";
+        playerObj.name = DefaultPlayerName;
         Player = playerObj.GetComponent<PlayerController>();
         Player.playerName = playerName;
     }
@@ -57,7 +61,7 @@ public class GameMasterController : MonoBehaviour
         if (isGameOver && Mouse.current.leftButton.wasPressedThisFrame)
         {
             isGameOver = false;
-            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+            SceneManager.LoadScene(MainMenuSceneName, LoadSceneMode.Single);
         }
     }
 
@@ -69,7 +73,7 @@ public class GameMasterController : MonoBehaviour
 
     public string GetPlayerName()
     {
-        return Player != null ? Player.playerName : "No Player";
+        return Player != null ? Player.playerName : DefaultPlayerName;
     }
 
     public int GetPlayerScore()

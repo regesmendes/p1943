@@ -1,25 +1,30 @@
+using System.Linq;
 using UnityEngine;
 
 // INHERITANCE - EnemySpawnerController inherits from MonoBehaviour
 public class EnemySpawnerController : MonoBehaviour
 {
     public GameObject enemyPrefab;
-    private int waveCount = 0;
-    private float intervalBetweenPlanes = 0.3f;
+    private readonly float intervalBetweenPlanes = 0.3f;
 
     void Start()
     {
-        InvokeRepeating(nameof(SpawnEnemy), 1f, 10f);
+        Invoke(nameof(Stage1), 1f);
     }
 
-    private void SpawnEnemy()
+    private void Stage1()
     {
-        if (waveCount++ % 2 == 0)
+        int intervalBetweenWaves = 5;
+        int waveLimit = 5;
+
+        string[] enemySquads = {
+            nameof(LeftToRightSquad),
+            nameof(RightToLeftSquad)
+        };
+
+        for (int waveCount = 0, interval = intervalBetweenWaves; waveCount++ < waveLimit;)
         {
-            LeftToRightSquad();
-        } else
-        {
-            RightToLeftSquad();
+            Invoke(enemySquads[waveCount % enemySquads.Count()], interval * waveCount);
         }
     }
 
@@ -48,6 +53,7 @@ public class EnemySpawnerController : MonoBehaviour
         );
         var enemy = enemyObj.GetComponent<EnemyController>();
         enemy.startingPosition = new Vector3(-42, 2, 20);
+        enemy.transform.Rotate(0, 180, 0); // Rotate to face right direction
     }
 
     private void RightToLeftPlane()

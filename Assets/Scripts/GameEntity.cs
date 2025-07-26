@@ -1,13 +1,10 @@
 using UnityEngine;
 
-// INHERITANCE - Base class for all game entities (initially Player and Enemy) and it inherits from MonoBehaviour
 public abstract class GameEntity : MonoBehaviour
 {
-    // ENCAPSULATION - private fields with public accessor
     private int health = 100;
     private float moveSpeed = 10f;
 
-    // ENCAPSULATION - Public properties to access private fields
     public int Health
     {
         get { return health; }
@@ -19,7 +16,6 @@ public abstract class GameEntity : MonoBehaviour
         set { moveSpeed = value; }
     }
 
-    // ABSTRACTION - High-level method that hides implementation details
     public void TakeDamage(int damage)
     {
         Health -= damage;
@@ -31,13 +27,11 @@ public abstract class GameEntity : MonoBehaviour
         }
     }
 
-    // POLYMORPHISM - Virtual methods that can be overridden by child classes
     protected virtual void OnDamageTaken(int damage)
     {
         Debug.Log($"{gameObject.name} took {damage} damage!");
     }
 
-    // POLYMORPHISM - Abstract methods that MUST be implemented by child classes
     protected abstract void Die();
     protected abstract void Move();
     protected abstract void CheckBoundaries();

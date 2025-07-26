@@ -614,7 +614,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffb4429bf5200f74bb78f797a0c82626, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 4702917926868155857, guid: 822681a68b6e58e4cbd9fa6484c06978, type: 3}
+  PlayerPrefab: {fileID: 6372487390199290357, guid: b64fb26fda8ab4849a5313610419644a, type: 3}
   isGameOver: 0
 --- !u!1 &610449117
 GameObject:
